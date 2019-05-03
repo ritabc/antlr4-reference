@@ -64,4 +64,11 @@ public class EvalVisitor extends LabeledExprBaseVisitor<Integer> {
     public Integer visitParens(LabeledExprParser.ParensContext ctx) {
         return visit(ctx.expr()); // return child expr's value
     }
+
+    // clear
+    @Override
+    public Integer visitClear(LabeledExprParser.ClearContext ctx) {
+        memory.clear();
+        return 0;
+    }
 }
