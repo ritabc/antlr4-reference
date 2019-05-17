@@ -97,9 +97,12 @@ public class LExprParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_s; }
 		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LExprVisitor ) return ((LExprVisitor<? extends T>)visitor).visitS(this);
-			else return visitor.visitChildren(this);
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).enterS(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).exitS(this);
 		}
 	}
 
@@ -145,9 +148,12 @@ public class LExprParser extends Parser {
 		public TerminalNode ADD() { return getToken(LExprParser.ADD, 0); }
 		public AddContext(EContext ctx) { copyFrom(ctx); }
 		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LExprVisitor ) return ((LExprVisitor<? extends T>)visitor).visitAdd(this);
-			else return visitor.visitChildren(this);
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).enterAdd(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).exitAdd(this);
 		}
 	}
 	public static class MultContext extends EContext {
@@ -160,18 +166,24 @@ public class LExprParser extends Parser {
 		public TerminalNode MULT() { return getToken(LExprParser.MULT, 0); }
 		public MultContext(EContext ctx) { copyFrom(ctx); }
 		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LExprVisitor ) return ((LExprVisitor<? extends T>)visitor).visitMult(this);
-			else return visitor.visitChildren(this);
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).enterMult(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).exitMult(this);
 		}
 	}
 	public static class IntContext extends EContext {
 		public TerminalNode INT() { return getToken(LExprParser.INT, 0); }
 		public IntContext(EContext ctx) { copyFrom(ctx); }
 		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LExprVisitor ) return ((LExprVisitor<? extends T>)visitor).visitInt(this);
-			else return visitor.visitChildren(this);
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).enterInt(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LExprListener ) ((LExprListener)listener).exitInt(this);
 		}
 	}
 
