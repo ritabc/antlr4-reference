@@ -2,7 +2,7 @@
     "description": "An imaginary server config file",
     "logs": {
         "level": "verbose",
-        "dif": "/var/log"
+        "dir": "/var/log"
     },
     "host": "antlr.org",
     "admin": [

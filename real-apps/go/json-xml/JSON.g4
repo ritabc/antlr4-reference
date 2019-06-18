@@ -11,7 +11,7 @@ array:
 	| '[' ']'					# BlankArray;
 
 value:
-	STRING		# String
+	STRING		# StringValue
 	| NUMBER	# Atom
 	| object	# ObjectValue
 	| array		# ArrayValue

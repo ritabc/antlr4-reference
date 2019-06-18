@@ -1,11 +1,12 @@
 package main
 
 import (
-	jsonParser "ANTLR/antlr/real-apps/go/json-xml/parser"
+	jsonParser "ANTLR/text-follow-along/real-apps/go/json-xml/parser"
 	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	// "github.com/sanity-io/litter"
 	"os"
-	"reflect"
+	// "strconv"
 	"strings"
 )
 
@@ -15,12 +16,11 @@ func main() {
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := jsonParser.NewJSONParser(tokens)
 	tree := parser.Json()
-	fmt.Printf("Tree: %v\n", tree.ToStringTree(parser.RuleNames, parser))
+	// fmt.Printf("Tree: %v\n", tree.ToStringTree(parser.RuleNames, parser))
 	walker := antlr.NewParseTreeWalker()
 	listener := &jsonListener{}
-	listener.xml = make(map[antlr.ParseTree]string)
 	walker.Walk(listener, tree)
-	fmt.Println(listener.xml)
+	listener.printAllXML()
 }
 
 type jsonListener struct {
@@ -39,6 +39,7 @@ type jsonListener struct {
 func (l *jsonListener) getXML(ctx antlr.ParseTree) string {
 	value, found := l.xml[ctx]
 	if !found {
+
 		return ""
 	}
 	return value
@@ -48,17 +49,17 @@ func (l *jsonListener) setXML(ctx antlr.ParseTree, s string) {
 	l.xml[ctx] = s
 }
 
+func (l *jsonListener) EnterJson(ctx *jsonParser.JsonContext) {
+	l.xml = make(map[antlr.ParseTree]string)
+}
+
 // The Atom alternatives of value 'return' or annotate the Atom node with, the text of the matched token
 func (l *jsonListener) ExitAtom(ctx *jsonParser.AtomContext) {
 	l.setXML(ctx, ctx.GetText())
 }
 
-func (l *jsonListener) ExitString(ctx *jsonParser.StringContext) {
+func (l *jsonListener) ExitStringValue(ctx *jsonParser.StringValueContext) {
 	l.setXML(ctx, stripQuotes(ctx.GetText()))
-}
-
-func (l *jsonListener) ExitObjectValue(ctx *jsonParser.ObjectValueContext) {
-	l.setXML(ctx, l.getXML(ctx.Object()))
 }
 
 func (l *jsonListener) ExitArrayValue(ctx *jsonParser.ArrayValueContext) {
@@ -68,17 +69,23 @@ func (l *jsonListener) ExitArrayValue(ctx *jsonParser.ArrayValueContext) {
 func (l *jsonListener) ExitPair(ctx *jsonParser.PairContext) {
 	tag := stripQuotes(ctx.STRING().GetText())
 	vctx := ctx.Value()
-	x := fmt.Sprintf("<%s>%s</%s>\n", tag, l.getXML(vctx), tag)
-	l.setXML(vctx, x)
+	x := fmt.Sprintf("<%v>%v</%v>\n", tag, l.getXML(vctx), tag)
+	l.setXML(ctx, x)
 }
 
 func (l *jsonListener) ExitAnObject(ctx *jsonParser.AnObjectContext) {
 	var output strings.Builder
 	output.WriteString("\n")
-	for _, pairContext := range ctx.AllPair() {
-		output.WriteString(l.getXML(pairContext))
+	for _, iPairContext := range ctx.AllPair() {
+		pctx := iPairContext.GetRuleContext()
+		write := l.getXML(pctx)
+		output.WriteString(write)
 	}
 	l.setXML(ctx, output.String())
+}
+
+func (l *jsonListener) ExitObjectValue(ctx *jsonParser.ObjectValueContext) {
+	l.setXML(ctx, l.getXML(ctx.Object()))
 }
 
 func (l *jsonListener) ExitBlankObject(ctx *jsonParser.BlankObjectContext) {
@@ -102,13 +109,34 @@ func (l *jsonListener) ExitBlankArray(ctx *jsonParser.BlankArrayContext) {
 }
 
 func (l *jsonListener) ExitJson(ctx *jsonParser.JsonContext) {
-	var parseTree antlr.ParseTree
-	fmt.Println(ctx.GetChildOfType(0, reflect.TypeOf(parseTree)))
-	l.setXML(ctx, l.getXML(ctx.GetChildOfType(0, reflect.TypeOf(parseTree))))
+	l.setXML(ctx, l.getXML(ctx))
 }
 
 func stripQuotes(quote string) string {
 	out := []byte(quote)
+	if len(out) == 0 {
+		return quote
+	}
 	out = out[1 : len(out)-1]
 	return string(out)
+}
+
+// func (l jsonListener) printForDebugging() {
+// 	var out strings.Builder
+// 	out.WriteString("\nprintForDebugging Start\n")
+// 	out.WriteString(strconv.Itoa(len(l.xml)))
+// 	for ctx, value := range l.xml {
+// 		pair := fmt.Sprintf("(Some Context with text) %v : %v (value)\n", ctx.GetText(), value)
+// 		out.WriteString(pair)
+// 	}
+// 	out.WriteString("\nprintForDebugging End\n")
+// 	fmt.Print(out.String())
+// }
+
+func (l jsonListener) printAllXML() {
+	var out strings.Builder
+	for _, value := range l.xml {
+		out.WriteString(value)
+	}
+	fmt.Println(out.String())
 }
