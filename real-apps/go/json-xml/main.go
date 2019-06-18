@@ -4,9 +4,7 @@ import (
 	jsonParser "ANTLR/text-follow-along/real-apps/go/json-xml/parser"
 	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	// "github.com/sanity-io/litter"
 	"os"
-	// "strconv"
 	"strings"
 )
 
@@ -20,7 +18,6 @@ func main() {
 	walker := antlr.NewParseTreeWalker()
 	listener := &jsonListener{}
 	walker.Walk(listener, tree)
-	listener.printAllXML()
 }
 
 type jsonListener struct {
@@ -32,7 +29,8 @@ type jsonListener struct {
 		Useful with parse tree listeners that need to associate values with
 		particular tree nodes, kind of like specifying a return value for the listener event method that visited a particular node
 	*/
-	// New field xml (annotations) map. keys: parseTree node and value is struct: new type with fields of what info we want to pass around (xml var: see page 125 and 134)
+	// New field xml (annotations) map. keys: parseTree node and value is struct:
+	// new type with fields of what info we want to pass around (xml var: see page 125 and 134)
 	xml map[antlr.ParseTree]string
 }
 
@@ -109,7 +107,8 @@ func (l *jsonListener) ExitBlankArray(ctx *jsonParser.BlankArrayContext) {
 }
 
 func (l *jsonListener) ExitJson(ctx *jsonParser.JsonContext) {
-	l.setXML(ctx, l.getXML(ctx))
+	l.setXML(ctx, l.getXML(ctx.GetChild(0).(antlr.ParseTree)))
+	fmt.Println(l.getXML(ctx))
 }
 
 func stripQuotes(quote string) string {
@@ -121,22 +120,9 @@ func stripQuotes(quote string) string {
 	return string(out)
 }
 
-// func (l jsonListener) printForDebugging() {
-// 	var out strings.Builder
-// 	out.WriteString("\nprintForDebugging Start\n")
-// 	out.WriteString(strconv.Itoa(len(l.xml)))
-// 	for ctx, value := range l.xml {
-// 		pair := fmt.Sprintf("(Some Context with text) %v : %v (value)\n", ctx.GetText(), value)
-// 		out.WriteString(pair)
+// func getAllMethods(inputType reflect.Type) {
+// 	for i := 0; i < inputType.NumMethod(); i++ {
+// 		method := inputType.Method(i)
+// 		fmt.Println(method.Name)
 // 	}
-// 	out.WriteString("\nprintForDebugging End\n")
-// 	fmt.Print(out.String())
 // }
-
-func (l jsonListener) printAllXML() {
-	var out strings.Builder
-	for _, value := range l.xml {
-		out.WriteString(value)
-	}
-	fmt.Println(out.String())
-}
