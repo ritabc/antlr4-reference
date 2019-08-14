@@ -27,8 +27,6 @@ type Symbol struct {
 //}
 
 type Scope interface {
-    //getScopeName() string
-    //getEnclopsingScope() scope
     Define(sym ISymbol)
     Resolve(name string) (ISymbol, string)
     GetEnclosingScope() Scope
@@ -37,37 +35,6 @@ type Scope interface {
 type ISymbol interface {
     ToString() string
 }
-//type BaseScope struct { // implements scope
-//    EnclosingScope Scope // nil if global (outermost) scope
-//    Symbols map[string]Symbol
-//}
-
-//func (bs BaseScope) Define(sym Symbol) {
-//    bs.Symbols[sym.Name] = sym
-//    // track the scope in each symbol
-//    sym.Scope = bs
-//}
-//
-//func (bs BaseScope) resolve(name string) (Symbol, error) {
-//    var sym Symbol
-//    sym, ok := bs.Symbols[name]
-//    if !ok {
-//        // if not here, check any enclosing scope
-//        if bs.EnclosingScope != nil {
-//            enclosing, err := bs.EnclosingScope.resolve(name)
-//            if err != nil {
-//                return enclosing, nil
-//            }
-//        }
-//        // if not found & no enclosing scope,
-//        return sym, errors.New(fmt.Sprintf("No symbol found of name %v", name))
-//    }
-//    return sym, nil
-//}
-//
-//func (bs BaseScope) GetEnclosingScope() Scope {
-//    return bs.EnclosingScope
-//}
 
 type GlobalScope struct {
     Symbols map[string]ISymbol
@@ -75,9 +42,6 @@ type GlobalScope struct {
 }
 
 func (gs GlobalScope) Define(sym ISymbol) {
-    // track the scope in each symbol
-    //sym.Symbol.Scope = gs
-    //gs.Symbols[sym.Name] = sym
     switch sym.(type) {
     case FunctionSymbol:
         dupFnSym := sym.(FunctionSymbol)
@@ -121,10 +85,6 @@ type LocalScope struct {
 }
 
 func (ls LocalScope) Define(sym ISymbol) {
-    //sym.Scope = ls
-    //ls.Symbols[sym.Name] = sym
-    // track the scope in each symbol
-
     switch sym.(type) {
     case FunctionSymbol:
         dupFnSym := sym.(FunctionSymbol)
@@ -172,9 +132,6 @@ type FunctionSymbol struct { // implements Scope & ISymbol
 }
 
 func (fs FunctionSymbol) Define(sym ISymbol) {
-    // track the scope in each symbol. TODO: should sym come in as a pointer?
-    //sym.Scope = fs
-    //fs.Arguments[sym.Name] = sym
     switch sym.(type) {
     case FunctionSymbol:
         dupFnSym := sym.(FunctionSymbol)

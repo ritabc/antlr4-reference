@@ -16,7 +16,7 @@ type defPhaseListener struct {
 
     scopes map[antlr.ParseTree]symTbl.Scope
     globals symTbl.GlobalScope
-    currentScope symTbl.Scope // needs to be a pointer?
+    currentScope symTbl.Scope
 }
 
 func (dPL *defPhaseListener) EnterFile(ctx *cParser.FileContext) {
@@ -24,7 +24,6 @@ func (dPL *defPhaseListener) EnterFile(ctx *cParser.FileContext) {
     dPL.globals = symTbl.GlobalScope{
         Symbols: make(map[string]symTbl.ISymbol),
     }
-    //dPL.currentScope = dPL.globals.(symTbl.Scope) // ??? proper use of Enclosing Scope?
     dPL.currentScope = dPL.globals
 }
 
@@ -81,14 +80,6 @@ func (dPL *defPhaseListener) EnterBlock(ctx *cParser.BlockContext) {
         EnclosingScope: dPL.currentScope,
     }
 
-    //switch v := dPL.currentScope.(type) {
-    //case symTbl.FunctionSymbol:
-    //    local = symTbl.LocalScope{
-    //        BaseScope: dPL.currentScope.(symTbl.FunctionSymbol).EnclosingScope.(symTbl.BaseScope), // is this a correct use of enclosing scope?
-    //    }
-    //default:
-    //    fmt.Printf("dPL.currentScope is type: %t, value: %v\n", v, v) // TODO: pass block statement in as input, update this line
-    //}
     dPL.currentScope = local
     dPL.saveScope(ctx, dPL.currentScope) // push new local scope
 }
@@ -112,7 +103,6 @@ func (dPL *defPhaseListener) defineVar(typeCtx cParser.ICymbolTypeContext, nameT
         Symbol: symTbl.Symbol{
             Name: nameToken.GetText(),
             SymbolType: symType,
-            Scope: dPL.currentScope, // current or enclosing?
         },
     }
     dPL.currentScope.Define(varSymbol) // Define symbol in current scope
@@ -183,8 +173,6 @@ func (rPL *refPhaseListener) ExitVar(ctx *cParser.VarContext) {
     if err != "" {
         throwError(ctx.ID().GetSymbol(), "no such variable: "+name)
     }
-    // variable is a symbol
-    // need to check if it's a FnSym OR VarSymbol
     if reflect.TypeOf(variable) == reflect.TypeOf(symTbl.FunctionSymbol{}) {
         throwError(ctx.ID().GetSymbol(), name+" is not a variable")
     }
