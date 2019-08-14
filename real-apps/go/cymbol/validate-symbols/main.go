@@ -22,7 +22,7 @@ type defPhaseListener struct {
 func (dPL *defPhaseListener) EnterFile(ctx *cParser.FileContext) {
     dPL.scopes = make(map[antlr.ParseTree]symTbl.Scope)
     dPL.globals = symTbl.GlobalScope{
-        Symbols: make(map[string]symTbl.Symbol),
+        Symbols: make(map[string]symTbl.ISymbol),
     }
     //dPL.currentScope = dPL.globals.(symTbl.Scope) // ??? proper use of Enclosing Scope?
     dPL.currentScope = dPL.globals
@@ -43,10 +43,10 @@ func (dPL *defPhaseListener) EnterFunctionDecl(ctx *cParser.FunctionDeclContext)
             Name: name,
             SymbolType: symType,
         },
-        Arguments: make(map[string]symTbl.Symbol),
+        Arguments: make(map[string]symTbl.ISymbol),
         EnclosingScope: dPL.currentScope,
     }
-    dPL.currentScope.Define(function.Symbol) // Add (define) function to current scope. This processes function as a symbol
+    dPL.currentScope.Define(function) // Add (define) function to current scope. This processes function as a symbol
     dPL.saveScope(ctx, function) // Push: set function's parent to current
     dPL.currentScope = function // Current scope is now function scope
 }
@@ -77,7 +77,7 @@ func (dPL *defPhaseListener) saveScope(ctx antlr.ParserRuleContext, s symTbl.Sco
 func (dPL *defPhaseListener) EnterBlock(ctx *cParser.BlockContext) {
     // Make new localscope that points to enclosing scope (aka parent aka currentScope)
     var local = symTbl.LocalScope{
-        Symbols: make(map[string]symTbl.Symbol),
+        Symbols: make(map[string]symTbl.ISymbol),
         EnclosingScope: dPL.currentScope,
     }
 
@@ -115,7 +115,7 @@ func (dPL *defPhaseListener) defineVar(typeCtx cParser.ICymbolTypeContext, nameT
             Scope: dPL.currentScope, // current or enclosing?
         },
     }
-    dPL.currentScope.Define(varSymbol.Symbol) // Define symbol in current scope
+    dPL.currentScope.Define(varSymbol) // Define symbol in current scope
 }
 
 func main() {
@@ -183,6 +183,8 @@ func (rPL *refPhaseListener) ExitVar(ctx *cParser.VarContext) {
     if err != "" {
         throwError(ctx.ID().GetSymbol(), "no such variable: "+name)
     }
+    // variable is a symbol
+    // need to check if it's a FnSym OR VarSymbol
     if reflect.TypeOf(variable) == reflect.TypeOf(symTbl.FunctionSymbol{}) {
         throwError(ctx.ID().GetSymbol(), name+" is not a variable")
     }
@@ -190,13 +192,13 @@ func (rPL *refPhaseListener) ExitVar(ctx *cParser.VarContext) {
 
 func (rPL *refPhaseListener) ExitCall(ctx *cParser.CallContext) {
     // can only handle f(...) not expr(...)
-    funcName := ctx.ID().GetText()
-    funcSym, err := rPL.currentScope.Resolve(funcName)
+    name := ctx.ID().GetText()
+    function, err := rPL.currentScope.Resolve(name)
     if err != "" {
-        throwError(ctx.ID().GetSymbol(), "no such function: " + funcName)
+        throwError(ctx.ID().GetSymbol(), "no such function: " + name)
     }
-    if reflect.TypeOf(funcSym) == reflect.TypeOf(symTbl.VariableSymbol{}) {
-        throwError(ctx.ID().GetSymbol(), funcName+" is not a function")
+    if reflect.TypeOf(function) == reflect.TypeOf(symTbl.VariableSymbol{}) {
+        throwError(ctx.ID().GetSymbol(), name+" is not a function")
     }
 }
 

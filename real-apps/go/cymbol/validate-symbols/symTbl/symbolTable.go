@@ -19,21 +19,24 @@ type Symbol struct {
     SymbolType int
 }
 
-func (s Symbol) toString() string {
-    if s.SymbolType == INVALID_T {
-        return s.Name
-    }
-    return "<" + s.Name + ":" + strconv.Itoa(s.SymbolType) + ">"
-}
+//func (s Symbol) toString() string {
+//    if s.SymbolType == INVALID_T {
+//        return s.Name
+//    }
+//    return "<" + s.Name + ":" + strconv.Itoa(s.SymbolType) + ">"
+//}
 
 type Scope interface {
     //getScopeName() string
     //getEnclopsingScope() scope
-    Define(sym Symbol)
-    Resolve(name string) (Symbol, string)
+    Define(sym ISymbol)
+    Resolve(name string) (ISymbol, string)
     GetEnclosingScope() Scope
 }
 
+type ISymbol interface {
+    ToString() string
+}
 //type BaseScope struct { // implements scope
 //    EnclosingScope Scope // nil if global (outermost) scope
 //    Symbols map[string]Symbol
@@ -67,18 +70,30 @@ type Scope interface {
 //}
 
 type GlobalScope struct {
-    Symbols map[string]Symbol
+    Symbols map[string]ISymbol
     EnclosingScope Scope // this one is nil, since it's GlobalScope. TODO: set to nil upon initialization?
 }
 
-func (gs GlobalScope) Define(sym Symbol) {
-   // track the scope in each symbol
-   sym.Scope = gs
-    gs.Symbols[sym.Name] = sym
+func (gs GlobalScope) Define(sym ISymbol) {
+    // track the scope in each symbol
+    //sym.Symbol.Scope = gs
+    //gs.Symbols[sym.Name] = sym
+    switch sym.(type) {
+    case FunctionSymbol:
+        dupFnSym := sym.(FunctionSymbol)
+        dupFnSym.Symbol.Scope = gs
+        gs.Symbols[dupFnSym.Symbol.Name] = dupFnSym
+    case VariableSymbol:
+        dupVarSym := sym.(VariableSymbol)
+        dupVarSym.Symbol.Scope = gs
+        gs.Symbols[dupVarSym.Symbol.Name] = dupVarSym
+    default:
+        litter.Dump("SOMETHING WENT WRONG")
+    }
 }
 
-func (gs GlobalScope) Resolve(name string) (Symbol, string) {
-    var sym Symbol
+func (gs GlobalScope) Resolve(name string) (ISymbol, string) {
+    var sym ISymbol
     sym, ok := gs.Symbols[name]
     if !ok {
         // if not here, check any enclosing scope
@@ -101,18 +116,31 @@ func (gs GlobalScope) getScopeName() string {
 }
 
 type LocalScope struct {
-    Symbols map[string]Symbol
+    Symbols map[string]ISymbol
     EnclosingScope Scope
 }
 
-func (ls LocalScope) Define(sym Symbol) {
-    sym.Scope = ls
-    ls.Symbols[sym.Name] = sym
+func (ls LocalScope) Define(sym ISymbol) {
+    //sym.Scope = ls
+    //ls.Symbols[sym.Name] = sym
     // track the scope in each symbol
+
+    switch sym.(type) {
+    case FunctionSymbol:
+        dupFnSym := sym.(FunctionSymbol)
+        dupFnSym.Symbol.Scope = ls
+        ls.Symbols[dupFnSym.Symbol.Name] = dupFnSym
+    case VariableSymbol:
+        dupVarSym := sym.(VariableSymbol)
+        dupVarSym.Symbol.Scope = ls
+        ls.Symbols[dupVarSym.Symbol.Name] = dupVarSym
+    default:
+        litter.Dump("SOMETHING WENT WRONG")
+    }
 }
 
-func (ls LocalScope) Resolve(name string) (Symbol, string) {
-    var sym Symbol
+func (ls LocalScope) Resolve(name string) (ISymbol, string) {
+    var sym ISymbol
     sym, ok := ls.Symbols[name]
     if !ok {
         // if not here, check any enclosing scope
@@ -137,20 +165,32 @@ func (ls LocalScope) getScopeName() string {
 }
 
 // FunctionSymbol plays the role of a symbol and the scope which holds the arguments
-type FunctionSymbol struct { // implements Scope
-    Symbol
-    Arguments map[string]Symbol
+type FunctionSymbol struct { // implements Scope & ISymbol
+    Symbol Symbol
+    Arguments map[string]ISymbol
     EnclosingScope Scope
 }
 
-func (fs FunctionSymbol) Define(sym Symbol) {
+func (fs FunctionSymbol) Define(sym ISymbol) {
     // track the scope in each symbol. TODO: should sym come in as a pointer?
-    sym.Scope = fs
-    fs.Arguments[sym.Name] = sym
+    //sym.Scope = fs
+    //fs.Arguments[sym.Name] = sym
+    switch sym.(type) {
+    case FunctionSymbol:
+        dupFnSym := sym.(FunctionSymbol)
+        dupFnSym.Symbol.Scope = fs
+        fs.Arguments[dupFnSym.Symbol.Name] = dupFnSym
+    case VariableSymbol:
+        dupVarSym := sym.(VariableSymbol)
+        dupVarSym.Symbol.Scope = fs
+        fs.Arguments[dupVarSym.Symbol.Name] = dupVarSym
+    default:
+        litter.Dump("SOMETHING WENT WRONG")
+    }
 }
 
-func (fs FunctionSymbol) Resolve(name string) (Symbol, string) {
-    var sym Symbol
+func (fs FunctionSymbol) Resolve(name string) (ISymbol, string) {
+    var sym ISymbol
     sym, ok := fs.Arguments[name]
     if !ok {
         // if not here, check any enclosing scope
@@ -170,7 +210,27 @@ func (fs FunctionSymbol) GetEnclosingScope() Scope {
     return fs.EnclosingScope
 }
 
-type VariableSymbol struct {
+func (fs FunctionSymbol) ToString() string {
+    if fs.Symbol.SymbolType == INVALID_T {
+        return fs.Symbol.Name
+    }
+    return "<" + fs.Symbol.Name + ":" + strconv.Itoa(fs.Symbol.SymbolType) + ">"
+
+
+}
+
+type VariableSymbol struct { // implements ISymbol
     Symbol Symbol
 }
+
+func (vs VariableSymbol) ToString() string {
+    if vs.Symbol.SymbolType == INVALID_T {
+        return vs.Symbol.Name
+    }
+    return "<" + vs.Symbol.Name + ":" + strconv.Itoa(vs.Symbol.SymbolType) + ">"
+}
+
+
+
+
 
