@@ -1,7 +1,6 @@
 package symTbl
 
 import (
-    "errors"
     "fmt"
     "strconv"
 )
@@ -30,7 +29,7 @@ type Scope interface {
     //getScopeName() string
     //getEnclopsingScope() scope
     Define(sym Symbol)
-    resolve(name string) (Symbol, error)
+    Resolve(name string) (Symbol, string)
     GetEnclosingScope() Scope
 }
 
@@ -77,21 +76,21 @@ func (gs GlobalScope) Define(sym Symbol) {
    sym.Scope = gs
 }
 
-func (gs GlobalScope) resolve(name string) (Symbol, error) {
+func (gs GlobalScope) Resolve(name string) (Symbol, string) {
     var sym Symbol
     sym, ok := gs.Symbols[name]
     if !ok {
         // if not here, check any enclosing scope
         if gs.EnclosingScope != nil {
-            enclosing, err := gs.EnclosingScope.resolve(name)
-            if err != nil {
-                return enclosing, nil
+            enclosing, err := gs.EnclosingScope.Resolve(name)
+            if err == "" {
+                return enclosing, ""
             }
         }
         // if not found & no enclosing scope,
-        return sym, errors.New(fmt.Sprintf("No symbol found of name %v", name))
+        return sym, fmt.Sprintf("No symbol found of name %v", name)
     }
-    return sym, nil
+    return sym, ""
 }
 
 func (gs GlobalScope) GetEnclosingScope() Scope {
@@ -113,21 +112,21 @@ func (ls LocalScope) Define(sym Symbol) {
     sym.Scope = ls
 }
 
-func (ls LocalScope) resolve(name string) (Symbol, error) {
+func (ls LocalScope) Resolve(name string) (Symbol, string) {
     var sym Symbol
     sym, ok := ls.Symbols[name]
     if !ok {
         // if not here, check any enclosing scope
         if ls.EnclosingScope != nil {
-            enclosing, err := ls.EnclosingScope.resolve(name)
-            if err != nil {
-                return enclosing, nil
+            enclosing, err := ls.EnclosingScope.Resolve(name)
+            if err == "" {
+                return enclosing, ""
             }
         }
         // if not found & no enclosing scope,
-        return sym, errors.New(fmt.Sprintf("No symbol found of name %v", name))
+        return sym, fmt.Sprintf("No symbol found of name %v", name)
     }
-    return sym, nil
+    return sym, ""
 }
 
 func (ls LocalScope) GetEnclosingScope() Scope {
@@ -151,21 +150,21 @@ func (fs FunctionSymbol) Define(sym Symbol) {
     sym.Scope = fs
 }
 
-func (fs FunctionSymbol) resolve(name string) (Symbol, error) {
+func (fs FunctionSymbol) Resolve(name string) (Symbol, string) {
     var sym Symbol
     sym, ok := fs.Arguments[name]
     if !ok {
         // if not here, check any enclosing scope
         if fs.EnclosingScope != nil {
-            enclosing, err := fs.EnclosingScope.resolve(name)
-            if err != nil {
-                return enclosing, nil
+            enclosing, err := fs.EnclosingScope.Resolve(name)
+            if err != "" {
+                return enclosing, ""
             }
         }
         // if not found & no enclosing scope,
-        return sym, errors.New(fmt.Sprintf("No symbol found of name %v", name))
+        return sym, fmt.Sprintf("No symbol found of name %v", name)
     }
-    return sym, nil
+    return sym, ""
 }
 
 func (fs FunctionSymbol) GetEnclosingScope() Scope {

@@ -3,9 +3,12 @@ package main
 import (
     cParser "Projects/src/ANTLR/text-follow-along/real-apps/go/cymbol/validate-symbols/Cymbol"
     "Projects/src/ANTLR/text-follow-along/real-apps/go/cymbol/validate-symbols/symTbl"
+    "fmt"
     "github.com/antlr/antlr4/runtime/Go/antlr"
     "github.com/sanity-io/litter"
+    "log"
     "os"
+    "reflect"
 )
 
 type defPhaseListener struct {
@@ -49,8 +52,8 @@ func (dPL *defPhaseListener) EnterFunctionDecl(ctx *cParser.FunctionDeclContext)
 }
 
 func (dPL *defPhaseListener) ExitFunctionDecl(ctx *cParser.FunctionDeclContext) {
-    litter.Dump(dPL.currentScope)
     dPL.currentScope = dPL.currentScope.GetEnclosingScope() // pop currentScope into oblivion, move up stack
+
 }
 
 func getType(tokenType int) int {
@@ -91,7 +94,6 @@ func (dPL *defPhaseListener) EnterBlock(ctx *cParser.BlockContext) {
 }
 
 func (dPL *defPhaseListener) ExitBlock(ctx *cParser.BlockContext) {
-    litter.Dump(dPL.currentScope)
     dPL.currentScope = dPL.currentScope.GetEnclosingScope() // pop currentScope into oblivion (overwrite it), move up stack
 }
 
@@ -110,6 +112,7 @@ func (dPL *defPhaseListener) defineVar(typeCtx cParser.ICymbolTypeContext, nameT
         Symbol: symTbl.Symbol{
             Name: nameToken.GetText(),
             SymbolType: symType,
+            Scope: dPL.currentScope, // current or enclosing?
         },
     }
     dPL.currentScope.Define(varSymbol.Symbol) // Define symbol in current scope
@@ -124,4 +127,79 @@ func main() {
     walker := antlr.NewParseTreeWalker()
     defPhL := &defPhaseListener{}
     walker.Walk(defPhL, tree)
+
+    // create next phase and feed symbol table info from def to ref phase
+    ref := &refPhaseListener{
+        scopes: defPhL.scopes,
+        globals: defPhL.globals,
+    }
+    walker.Walk(ref, tree)
+}
+
+type refPhaseListener struct {
+    *cParser.BaseCymbolListener
+
+    scopes map[antlr.ParseTree]symTbl.Scope
+    globals symTbl.GlobalScope
+    currentScope symTbl.Scope // resolve symbols starting in this scope
+}
+
+
+func (rPL *refPhaseListener) EnterFile(ctx *cParser.FileContext) {
+    rPL.currentScope = rPL.globals
+}
+
+func (rPL *refPhaseListener) EnterFunctionDecl(ctx *cParser.FunctionDeclContext) {
+    // Set current scope = to ctx's scope
+    rPL.currentScope = rPL.getScope(ctx)
+}
+
+func (rPL *refPhaseListener) ExitFunctionDecl(ctx *cParser.FunctionDeclContext) {
+
+    rPL.currentScope = rPL.currentScope.GetEnclosingScope()
+
+}
+
+func (rPL *refPhaseListener) EnterBlock(ctx *cParser.BlockContext) {
+    rPL.currentScope = rPL.getScope(ctx)
+}
+
+func (rPL *refPhaseListener) ExitBlock(ctx *cParser.BlockContext) {
+    rPL.currentScope = rPL.currentScope.GetEnclosingScope()
+}
+
+
+func (rPL *refPhaseListener) getScope(ctx antlr.ParseTree) symTbl.Scope {
+    scope, found := rPL.scopes[ctx]
+    if !found {
+        return nil
+    }
+    return scope
+}
+
+func (rPL *refPhaseListener) ExitVar(ctx *cParser.VarContext) {
+    name := ctx.ID().GetSymbol().GetText()
+    variable, err := rPL.currentScope.Resolve(name)
+    if err != "" {
+        throwError(ctx.ID().GetSymbol(), "no such variable: "+name)
+    }
+    if reflect.TypeOf(variable) == reflect.TypeOf(symTbl.FunctionSymbol{}) {
+        throwError(ctx.ID().GetSymbol(), name+" is not a variable")
+    }
+}
+
+func (rPL *refPhaseListener) ExitCall(ctx *cParser.CallContext) {
+    // can only handle f(...) not expr(...)
+    funcName := ctx.ID().GetText()
+    funcSym, err := rPL.currentScope.Resolve(funcName)
+    if err != "" {
+        throwError(ctx.ID().GetSymbol(), "no such function: " + funcName)
+    }
+    if reflect.TypeOf(funcSym) == reflect.TypeOf(symTbl.VariableSymbol{}) {
+        throwError(ctx.ID().GetSymbol(), funcName +" is not a function")
+    }
+}
+
+func throwError(t antlr.Token, msg string) {
+    log.Println(fmt.Errorf("line %v:%v %v\n", t.GetLine(), t.GetColumn(), msg))
 }

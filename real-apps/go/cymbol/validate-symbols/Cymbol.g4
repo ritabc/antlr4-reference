@@ -1,51 +1,56 @@
+/** Simple statically-typed programming language with functions and variables taken from "Language
+ * Implementation Patterns" book.
+ */
 grammar Cymbol;
 
 file: (functionDecl | varDecl)+;
 
 varDecl: cymbolType ID ('=' expr)? ';';
+cymbolType: T_FLOAT | T_INT | T_VOID ; // user-defined types
 
-cymbolType: T_FLOAT | T_INT | T_VOID ;
-
-functionDecl: cymbolType ID '(' formalParameters? ')' block;
+functionDecl:
+	cymbolType ID '(' formalParameters? ')' block ; // "void f(int x) {...}"
 
 formalParameters: formalParameter (',' formalParameter)*;
+formalParameter: cymbolType ID;
 
-formalParameter : cymbolType ID;
-
-block: '{' stat* '}' ;
+block: '{' stat* '}'; // possibly empty statement block
 
 stat:
-    block
-    | varDecl
-    | 'if' expr 'then' stat ('else' stat)?
-    | 'return' expr? ';'
-    | expr '=' expr ';'
-    | expr ';' // function call
-    ;
+	block
+	| varDecl
+	| 'if' expr 'then' stat ('else' stat)?
+	| 'return' expr? ';'
+	| expr '=' expr ';' // assignment
+	| expr ';' ; // func call
 
-expr: ID '(' exprList? ')' # Call
-    | expr '[' expr ']'    # Index
-    | '-' expr             # Negate
-    | '!' expr             # Not
-    | expr '*' expr        # Mult
-    | expr ('+'|'-') expr  # AddSub
-    | expr '==' expr       # Equal
-    | ID                   # Var
-    | INT                  # Int
-    | '(' expr ')'         # Parens
-    ;
+/* expr below becomes the following non-left recursive rule: expr[int _p] : ( '-' expr[6] | '!'
+ expr[5] | ID | INT | '(' expr ')' ) ( {8 >= $_p}? '*' expr[9] | {7 >= $_p}? ('+'|'-') expr[8] | {4
+ >= $_p}? '==' expr[5] | {10 >= $_p}? '[' expr ']' | {9 >= $_p}? '(' exprList? ')' )* ;
+ */
 
-exprList: expr (',' expr)* ;
+expr:
+	ID '(' exprList? ')'	# Call
+	| expr '[' expr ']'		# Index
+	| '-' expr				# Negate
+	| '!' expr				# Not
+	| expr '*' expr			# Mult
+	| expr ('+' | '-') expr	# AddSub
+	| expr '==' expr		# Equal
+	| ID					# Var
+	| INT					# Int
+	| '(' expr ')'			# Parens;
+
+exprList: expr (',' expr)*; // arg list
 
 T_FLOAT: 'float';
 T_INT: 'int';
 T_VOID: 'void';
-
-ID: LETTER (LETTER | [0-9])* ;
-fragment LETTER : [a-zA-Z];
+ID: LETTER (LETTER | [0-9])*;
+fragment LETTER: [a-zA-Z];
 
 INT: [0-9]+;
 
-WS : [ \t\r\n]+ -> skip;
+WS: [ \t\n\r]+ -> skip;
 
-SL_COMMENT : '//' .*? '\n' -> skip;
+SL_COMMENT: '//' .*? '\n' -> skip;
