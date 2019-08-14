@@ -2,6 +2,7 @@ package symTbl
 
 import (
     "fmt"
+    "github.com/sanity-io/litter"
     "strconv"
 )
 
@@ -71,9 +72,9 @@ type GlobalScope struct {
 }
 
 func (gs GlobalScope) Define(sym Symbol) {
-    gs.Symbols[sym.Name] = sym
    // track the scope in each symbol
    sym.Scope = gs
+    gs.Symbols[sym.Name] = sym
 }
 
 func (gs GlobalScope) Resolve(name string) (Symbol, string) {
@@ -82,10 +83,8 @@ func (gs GlobalScope) Resolve(name string) (Symbol, string) {
     if !ok {
         // if not here, check any enclosing scope
         if gs.EnclosingScope != nil {
-            enclosing, err := gs.EnclosingScope.Resolve(name)
-            if err == "" {
-                return enclosing, ""
-            }
+            // Should never reach since gs is Outermost
+            litter.Dump("SOMETHING WENT WRONG")
         }
         // if not found & no enclosing scope,
         return sym, fmt.Sprintf("No symbol found of name %v", name)
@@ -107,9 +106,9 @@ type LocalScope struct {
 }
 
 func (ls LocalScope) Define(sym Symbol) {
+    sym.Scope = ls
     ls.Symbols[sym.Name] = sym
     // track the scope in each symbol
-    sym.Scope = ls
 }
 
 func (ls LocalScope) Resolve(name string) (Symbol, string) {
@@ -118,9 +117,9 @@ func (ls LocalScope) Resolve(name string) (Symbol, string) {
     if !ok {
         // if not here, check any enclosing scope
         if ls.EnclosingScope != nil {
-            enclosing, err := ls.EnclosingScope.Resolve(name)
+            symInEnclosingScope, err := ls.EnclosingScope.Resolve(name)
             if err == "" {
-                return enclosing, ""
+                return symInEnclosingScope, ""
             }
         }
         // if not found & no enclosing scope,
@@ -146,8 +145,8 @@ type FunctionSymbol struct { // implements Scope
 
 func (fs FunctionSymbol) Define(sym Symbol) {
     // track the scope in each symbol. TODO: should sym come in as a pointer?
-    fs.Arguments[sym.Name] = sym
     sym.Scope = fs
+    fs.Arguments[sym.Name] = sym
 }
 
 func (fs FunctionSymbol) Resolve(name string) (Symbol, string) {
@@ -156,9 +155,9 @@ func (fs FunctionSymbol) Resolve(name string) (Symbol, string) {
     if !ok {
         // if not here, check any enclosing scope
         if fs.EnclosingScope != nil {
-            enclosing, err := fs.EnclosingScope.Resolve(name)
-            if err != "" {
-                return enclosing, ""
+            symInEnclosingScope, err := fs.EnclosingScope.Resolve(name)
+            if err == "" {
+                return symInEnclosingScope, ""
             }
         }
         // if not found & no enclosing scope,

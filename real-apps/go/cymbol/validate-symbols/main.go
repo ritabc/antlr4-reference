@@ -196,7 +196,7 @@ func (rPL *refPhaseListener) ExitCall(ctx *cParser.CallContext) {
         throwError(ctx.ID().GetSymbol(), "no such function: " + funcName)
     }
     if reflect.TypeOf(funcSym) == reflect.TypeOf(symTbl.VariableSymbol{}) {
-        throwError(ctx.ID().GetSymbol(), funcName +" is not a function")
+        throwError(ctx.ID().GetSymbol(), funcName+" is not a function")
     }
 }
 
