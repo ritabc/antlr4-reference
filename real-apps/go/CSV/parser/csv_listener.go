@@ -17,6 +17,9 @@ type CSVListener interface {
 	// EnterRow is called when entering the row production.
 	EnterRow(c *RowContext)
 
+	// EnterFieldWWS is called when entering the fieldWWS production.
+	EnterFieldWWS(c *FieldWWSContext)
+
 	// EnterText is called when entering the text production.
 	EnterText(c *TextContext)
 
@@ -34,6 +37,9 @@ type CSVListener interface {
 
 	// ExitRow is called when exiting the row production.
 	ExitRow(c *RowContext)
+
+	// ExitFieldWWS is called when exiting the fieldWWS production.
+	ExitFieldWWS(c *FieldWWSContext)
 
 	// ExitText is called when exiting the text production.
 	ExitText(c *TextContext)

@@ -50,7 +50,3 @@ func main() {
         walker.Walk(listener, tree)
     }
 }
-
-func (l *exprListener) ExitStat(ctx parserL.StatContext) {
-
-}

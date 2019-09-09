@@ -39,6 +39,12 @@ func (s *BaseCSVListener) EnterRow(ctx *RowContext) {}
 // ExitRow is called when production row is exited.
 func (s *BaseCSVListener) ExitRow(ctx *RowContext) {}
 
+// EnterFieldWWS is called when production fieldWWS is entered.
+func (s *BaseCSVListener) EnterFieldWWS(ctx *FieldWWSContext) {}
+
+// ExitFieldWWS is called when production fieldWWS is exited.
+func (s *BaseCSVListener) ExitFieldWWS(ctx *FieldWWSContext) {}
+
 // EnterText is called when production text is entered.
 func (s *BaseCSVListener) EnterText(ctx *TextContext) {}
 

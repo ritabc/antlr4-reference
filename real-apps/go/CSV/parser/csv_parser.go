@@ -16,34 +16,40 @@ var _ = reflect.Copy
 var _ = strconv.Itoa
 
 var parserATN = []uint16{
-	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 7, 37, 4,
-	2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 3, 2, 3, 2, 6, 2, 13, 10,
-	2, 13, 2, 14, 2, 14, 3, 3, 3, 3, 3, 4, 3, 4, 3, 4, 7, 4, 22, 10, 4, 12,
-	4, 14, 4, 25, 11, 4, 3, 4, 5, 4, 28, 10, 4, 3, 4, 3, 4, 3, 5, 3, 5, 3,
-	5, 5, 5, 35, 10, 5, 3, 5, 2, 2, 6, 2, 4, 6, 8, 2, 2, 2, 37, 2, 10, 3, 2,
-	2, 2, 4, 16, 3, 2, 2, 2, 6, 18, 3, 2, 2, 2, 8, 34, 3, 2, 2, 2, 10, 12,
-	5, 4, 3, 2, 11, 13, 5, 6, 4, 2, 12, 11, 3, 2, 2, 2, 13, 14, 3, 2, 2, 2,
-	14, 12, 3, 2, 2, 2, 14, 15, 3, 2, 2, 2, 15, 3, 3, 2, 2, 2, 16, 17, 5, 6,
-	4, 2, 17, 5, 3, 2, 2, 2, 18, 23, 5, 8, 5, 2, 19, 20, 7, 3, 2, 2, 20, 22,
-	5, 8, 5, 2, 21, 19, 3, 2, 2, 2, 22, 25, 3, 2, 2, 2, 23, 21, 3, 2, 2, 2,
-	23, 24, 3, 2, 2, 2, 24, 27, 3, 2, 2, 2, 25, 23, 3, 2, 2, 2, 26, 28, 7,
-	4, 2, 2, 27, 26, 3, 2, 2, 2, 27, 28, 3, 2, 2, 2, 28, 29, 3, 2, 2, 2, 29,
-	30, 7, 5, 2, 2, 30, 7, 3, 2, 2, 2, 31, 35, 7, 6, 2, 2, 32, 35, 7, 7, 2,
-	2, 33, 35, 3, 2, 2, 2, 34, 31, 3, 2, 2, 2, 34, 32, 3, 2, 2, 2, 34, 33,
-	3, 2, 2, 2, 35, 9, 3, 2, 2, 2, 6, 14, 23, 27, 34,
+	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 8, 52, 4,
+	2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 4, 6, 9, 6, 3, 2, 3, 2, 6,
+	2, 15, 10, 2, 13, 2, 14, 2, 16, 3, 3, 3, 3, 3, 4, 3, 4, 3, 4, 7, 4, 24,
+	10, 4, 12, 4, 14, 4, 27, 11, 4, 3, 4, 5, 4, 30, 10, 4, 3, 4, 3, 4, 3, 5,
+	7, 5, 35, 10, 5, 12, 5, 14, 5, 38, 11, 5, 3, 5, 3, 5, 7, 5, 42, 10, 5,
+	12, 5, 14, 5, 45, 11, 5, 3, 6, 3, 6, 3, 6, 5, 6, 50, 10, 6, 3, 6, 2, 2,
+	7, 2, 4, 6, 8, 10, 2, 2, 2, 53, 2, 12, 3, 2, 2, 2, 4, 18, 3, 2, 2, 2, 6,
+	20, 3, 2, 2, 2, 8, 36, 3, 2, 2, 2, 10, 49, 3, 2, 2, 2, 12, 14, 5, 4, 3,
+	2, 13, 15, 5, 6, 4, 2, 14, 13, 3, 2, 2, 2, 15, 16, 3, 2, 2, 2, 16, 14,
+	3, 2, 2, 2, 16, 17, 3, 2, 2, 2, 17, 3, 3, 2, 2, 2, 18, 19, 5, 6, 4, 2,
+	19, 5, 3, 2, 2, 2, 20, 25, 5, 8, 5, 2, 21, 22, 7, 7, 2, 2, 22, 24, 5, 8,
+	5, 2, 23, 21, 3, 2, 2, 2, 24, 27, 3, 2, 2, 2, 25, 23, 3, 2, 2, 2, 25, 26,
+	3, 2, 2, 2, 26, 29, 3, 2, 2, 2, 27, 25, 3, 2, 2, 2, 28, 30, 7, 3, 2, 2,
+	29, 28, 3, 2, 2, 2, 29, 30, 3, 2, 2, 2, 30, 31, 3, 2, 2, 2, 31, 32, 7,
+	4, 2, 2, 32, 7, 3, 2, 2, 2, 33, 35, 7, 8, 2, 2, 34, 33, 3, 2, 2, 2, 35,
+	38, 3, 2, 2, 2, 36, 34, 3, 2, 2, 2, 36, 37, 3, 2, 2, 2, 37, 39, 3, 2, 2,
+	2, 38, 36, 3, 2, 2, 2, 39, 43, 5, 10, 6, 2, 40, 42, 7, 8, 2, 2, 41, 40,
+	3, 2, 2, 2, 42, 45, 3, 2, 2, 2, 43, 41, 3, 2, 2, 2, 43, 44, 3, 2, 2, 2,
+	44, 9, 3, 2, 2, 2, 45, 43, 3, 2, 2, 2, 46, 50, 7, 5, 2, 2, 47, 50, 7, 6,
+	2, 2, 48, 50, 3, 2, 2, 2, 49, 46, 3, 2, 2, 2, 49, 47, 3, 2, 2, 2, 49, 48,
+	3, 2, 2, 2, 50, 11, 3, 2, 2, 2, 8, 16, 25, 29, 36, 43, 49,
 }
 var deserializer = antlr.NewATNDeserializer(nil)
 var deserializedATN = deserializer.DeserializeFromUInt16(parserATN)
 
 var literalNames = []string{
-	"", "','", "'\r'", "'\n'",
+	"", "'\r'", "'\n'", "", "", "','",
 }
 var symbolicNames = []string{
-	"", "", "", "", "TEXT", "STRING",
+	"", "", "", "TEXT", "STRING", "COMMA", "WS",
 }
 
 var ruleNames = []string{
-	"file", "hdr", "row", "field",
+	"file", "hdr", "row", "fieldWWS", "field",
 }
 var decisionToDFA = make([]*antlr.DFA, len(deserializedATN.DecisionToState))
 
@@ -76,17 +82,19 @@ const (
 	CSVParserEOF    = antlr.TokenEOF
 	CSVParserT__0   = 1
 	CSVParserT__1   = 2
-	CSVParserT__2   = 3
-	CSVParserTEXT   = 4
-	CSVParserSTRING = 5
+	CSVParserTEXT   = 3
+	CSVParserSTRING = 4
+	CSVParserCOMMA  = 5
+	CSVParserWS     = 6
 )
 
 // CSVParser rules.
 const (
-	CSVParserRULE_file  = 0
-	CSVParserRULE_hdr   = 1
-	CSVParserRULE_row   = 2
-	CSVParserRULE_field = 3
+	CSVParserRULE_file     = 0
+	CSVParserRULE_hdr      = 1
+	CSVParserRULE_row      = 2
+	CSVParserRULE_fieldWWS = 3
+	CSVParserRULE_field    = 4
 )
 
 // IFileContext is an interface to support dynamic dispatch.
@@ -203,20 +211,20 @@ func (p *CSVParser) File() (localctx IFileContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(8)
+		p.SetState(10)
 		p.Hdr()
 	}
-	p.SetState(10)
+	p.SetState(12)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ok := true; ok; ok = (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<CSVParserT__0)|(1<<CSVParserT__1)|(1<<CSVParserT__2)|(1<<CSVParserTEXT)|(1<<CSVParserSTRING))) != 0) {
+	for ok := true; ok; ok = (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<CSVParserT__0)|(1<<CSVParserT__1)|(1<<CSVParserTEXT)|(1<<CSVParserSTRING)|(1<<CSVParserCOMMA)|(1<<CSVParserWS))) != 0) {
 		{
-			p.SetState(9)
+			p.SetState(11)
 			p.Row()
 		}
 
-		p.SetState(12)
+		p.SetState(14)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -314,7 +322,7 @@ func (p *CSVParser) Hdr() (localctx IHdrContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(14)
+		p.SetState(16)
 		p.Row()
 	}
 
@@ -359,27 +367,35 @@ func NewRowContext(parser antlr.Parser, parent antlr.ParserRuleContext, invoking
 
 func (s *RowContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *RowContext) AllField() []IFieldContext {
-	var ts = s.GetTypedRuleContexts(reflect.TypeOf((*IFieldContext)(nil)).Elem())
-	var tst = make([]IFieldContext, len(ts))
+func (s *RowContext) AllFieldWWS() []IFieldWWSContext {
+	var ts = s.GetTypedRuleContexts(reflect.TypeOf((*IFieldWWSContext)(nil)).Elem())
+	var tst = make([]IFieldWWSContext, len(ts))
 
 	for i, t := range ts {
 		if t != nil {
-			tst[i] = t.(IFieldContext)
+			tst[i] = t.(IFieldWWSContext)
 		}
 	}
 
 	return tst
 }
 
-func (s *RowContext) Field(i int) IFieldContext {
-	var t = s.GetTypedRuleContext(reflect.TypeOf((*IFieldContext)(nil)).Elem(), i)
+func (s *RowContext) FieldWWS(i int) IFieldWWSContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IFieldWWSContext)(nil)).Elem(), i)
 
 	if t == nil {
 		return nil
 	}
 
-	return t.(IFieldContext)
+	return t.(IFieldWWSContext)
+}
+
+func (s *RowContext) AllCOMMA() []antlr.TerminalNode {
+	return s.GetTokens(CSVParserCOMMA)
+}
+
+func (s *RowContext) COMMA(i int) antlr.TerminalNode {
+	return s.GetToken(CSVParserCOMMA, i)
 }
 
 func (s *RowContext) GetRuleContext() antlr.RuleContext {
@@ -425,41 +441,179 @@ func (p *CSVParser) Row() (localctx IRowContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(16)
-		p.Field()
+		p.SetState(18)
+		p.FieldWWS()
 	}
-	p.SetState(21)
+	p.SetState(23)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for _la == CSVParserT__0 {
+	for _la == CSVParserCOMMA {
 		{
-			p.SetState(17)
-			p.Match(CSVParserT__0)
+			p.SetState(19)
+			p.Match(CSVParserCOMMA)
 		}
 		{
-			p.SetState(18)
-			p.Field()
+			p.SetState(20)
+			p.FieldWWS()
 		}
 
-		p.SetState(23)
+		p.SetState(25)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
-	p.SetState(25)
+	p.SetState(27)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	if _la == CSVParserT__1 {
+	if _la == CSVParserT__0 {
 		{
-			p.SetState(24)
-			p.Match(CSVParserT__1)
+			p.SetState(26)
+			p.Match(CSVParserT__0)
 		}
 
 	}
 	{
-		p.SetState(27)
-		p.Match(CSVParserT__2)
+		p.SetState(29)
+		p.Match(CSVParserT__1)
+	}
+
+	return localctx
+}
+
+// IFieldWWSContext is an interface to support dynamic dispatch.
+type IFieldWWSContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// IsFieldWWSContext differentiates from other interfaces.
+	IsFieldWWSContext()
+}
+
+type FieldWWSContext struct {
+	*antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyFieldWWSContext() *FieldWWSContext {
+	var p = new(FieldWWSContext)
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	p.RuleIndex = CSVParserRULE_fieldWWS
+	return p
+}
+
+func (*FieldWWSContext) IsFieldWWSContext() {}
+
+func NewFieldWWSContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *FieldWWSContext {
+	var p = new(FieldWWSContext)
+
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = CSVParserRULE_fieldWWS
+
+	return p
+}
+
+func (s *FieldWWSContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *FieldWWSContext) Field() IFieldContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IFieldContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IFieldContext)
+}
+
+func (s *FieldWWSContext) AllWS() []antlr.TerminalNode {
+	return s.GetTokens(CSVParserWS)
+}
+
+func (s *FieldWWSContext) WS(i int) antlr.TerminalNode {
+	return s.GetToken(CSVParserWS, i)
+}
+
+func (s *FieldWWSContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *FieldWWSContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *FieldWWSContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(CSVListener); ok {
+		listenerT.EnterFieldWWS(s)
+	}
+}
+
+func (s *FieldWWSContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(CSVListener); ok {
+		listenerT.ExitFieldWWS(s)
+	}
+}
+
+func (p *CSVParser) FieldWWS() (localctx IFieldWWSContext) {
+	localctx = NewFieldWWSContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 6, CSVParserRULE_fieldWWS)
+	var _la int
+
+	defer func() {
+		p.ExitRule()
+	}()
+
+	defer func() {
+		if err := recover(); err != nil {
+			if v, ok := err.(antlr.RecognitionException); ok {
+				localctx.SetException(v)
+				p.GetErrorHandler().ReportError(p, v)
+				p.GetErrorHandler().Recover(p, v)
+			} else {
+				panic(err)
+			}
+		}
+	}()
+
+	var _alt int
+
+	p.EnterOuterAlt(localctx, 1)
+	p.SetState(34)
+	p.GetErrorHandler().Sync(p)
+	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 3, p.GetParserRuleContext())
+
+	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+		if _alt == 1 {
+			{
+				p.SetState(31)
+				p.Match(CSVParserWS)
+			}
+
+		}
+		p.SetState(36)
+		p.GetErrorHandler().Sync(p)
+		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 3, p.GetParserRuleContext())
+	}
+	{
+		p.SetState(37)
+		p.Field()
+	}
+	p.SetState(41)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == CSVParserWS {
+		{
+			p.SetState(38)
+			p.Match(CSVParserWS)
+		}
+
+		p.SetState(43)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
 	}
 
 	return localctx
@@ -615,7 +769,7 @@ func (s *EmptyContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *CSVParser) Field() (localctx IFieldContext) {
 	localctx = NewFieldContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 6, CSVParserRULE_field)
+	p.EnterRule(localctx, 8, CSVParserRULE_field)
 
 	defer func() {
 		p.ExitRule()
@@ -633,7 +787,7 @@ func (p *CSVParser) Field() (localctx IFieldContext) {
 		}
 	}()
 
-	p.SetState(32)
+	p.SetState(47)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
@@ -641,7 +795,7 @@ func (p *CSVParser) Field() (localctx IFieldContext) {
 		localctx = NewTextContext(p, localctx)
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(29)
+			p.SetState(44)
 			p.Match(CSVParserTEXT)
 		}
 
@@ -649,11 +803,11 @@ func (p *CSVParser) Field() (localctx IFieldContext) {
 		localctx = NewStringContext(p, localctx)
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(30)
+			p.SetState(45)
 			p.Match(CSVParserSTRING)
 		}
 
-	case CSVParserT__0, CSVParserT__1, CSVParserT__2:
+	case CSVParserT__0, CSVParserT__1, CSVParserCOMMA, CSVParserWS:
 		localctx = NewEmptyContext(p, localctx)
 		p.EnterOuterAlt(localctx, 3)
 
